@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tycoon API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .response-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .response-box pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 8px;
+            color: #1976D2;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Tycoon API Endpoint Tester</h1>
+            <p>Test API endpoints to find transformer locations and other blip coordinates</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 How to Get Your API Key:</h3>
+                <ul>
+                    <li>Join the Tycoon server in-game</li>
+                    <li>Type: <code>/api private new</code> (generates a new key)</li>
+                    <li>Type: <code>/api private copy</code> (copies key to clipboard)</li>
+                    <li>Paste the key below</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label>Server URL</label>
+                <select id="serverUrl">
+                    <option value="https://tycoon-2epova.users.cfx.re/status">Server 1 (Main)</option>
+                    <option value="https://tycoon-njyvop.users.cfx.re/status">Server 2 (Beta)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>API Endpoint</label>
+                <select id="endpoint">
+                    <option value="/map/positions2.json">map/positions2.json (Your Find!)</option>
+                    <option value="/map/positions.json">map/positions.json (Documented)</option>
+                    <option value="/players.json">players.json (No Key Required)</option>
+                    <option value="/airline.json">airline.json</option>
+                    <option value="/weather.json">weather.json</option>
+                    <option value="/charges.json">charges.json (Check API Balance)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Private API Key (Optional - Required for most endpoints)</label>
+                <input type="text" id="apiKey" placeholder="Enter your private API key here...">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="testEndpoint()">🚀 Test Endpoint</button>
+                <button class="btn-secondary" onclick="clearResponse()">🗑️ Clear Response</button>
+            </div>
+
+            <div id="statusContainer"></div>
+            <div class="response-box" id="responseBox">
+                <pre id="responseText">Response will appear here...</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastResponse = null;
+
+        async function testEndpoint() {
+            const serverUrl = document.getElementById('serverUrl').value;
+            const endpoint = document.getElementById('endpoint').value;
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const fullUrl = serverUrl + endpoint;
+
+            const statusContainer = document.getElementById('statusContainer');
+            const responseText = document.getElementById('responseText');
+
+            // Show loading status
+            statusContainer.innerHTML = '<span class="status status-loading">⏳ Loading...</span>';
+            responseText.textContent = 'Fetching data...';
+
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                // Add API key if provided
+                if (apiKey) {
+                    headers['X-Tycoon-Key'] = apiKey;
+                }
+
+                const response = await fetch(fullUrl, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                const statusCode = response.status;
+                const remainingCharges = response.headers.get('X-Tycoon-Charges');
+
+                let data;
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+
+                lastResponse = data;
+
+                // Show success status
+                let statusHTML = `<span class="status status-success">✅ Success - Status Code: ${statusCode}</span>`;
+                if (remainingCharges) {
+                    statusHTML += ` <span class="status status-success">💰 API Charges Remaining: ${remainingCharges}</span>`;
+                }
+                statusContainer.innerHTML = statusHTML;
+
+                // Format and display response
+                if (typeof data === 'object') {
+                    responseText.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    responseText.textContent = data;
+                }
+
+                // Log some helpful info
+                if (data.players) {
+                    console.log('Players found:', data.players.length);
+                }
+
+            } catch (error) {
+                statusContainer.innerHTML = '<span class="status status-error">❌ Error</span>';
+                responseText.textContent = `Error: ${error.message}\n\nPossible reasons:\n- Invalid API key\n- No API charges remaining\n- Endpoint doesn't exist\n- CORS restriction`;
+                console.error('Error:', error);
+            }
+        }
+
+        function clearResponse() {
+            document.getElementById('statusContainer').innerHTML = '';
+            document.getElementById('responseText').textContent = 'Response will appear here...';
+            lastResponse = null;
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('apiKey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testEndpoint();
+            }
+        });
+    </script>
+</body>
+</html>
